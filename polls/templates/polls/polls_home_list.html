@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+
+{% block title%} Опросы {% endblock %}
+
+{% block content %}
+
+{% for poll in polls %}
+
+<div class="card mb-3" style="height:360px;">
+    <div class="row md-10">
+
+        <div class="col-md-3">
+            {% if poll.photo %}
+            <img src="{{ poll.photo.url }}" class="img-fluid" alt="" style="width:auto; height:350px">
+            {% else %}
+            <img src="https://picsum.photos/700/1000" class="img-fluid" alt="" style="width:auto; height:350px">
+            {% endif %}
+        </div>
+
+        <div class="col-md">
+            <div class="card-body">
+
+                <div class="title" style="height: 50px">
+                    <h5 class="card-title">{{ poll.title }}</h5>
+                </div>
+
+                <div class="body" style="height: 200px">
+                    <p class="card-text">{{ poll.description|truncatechars:600 }}</p>
+                </div>
+
+                <div class="button" style="height: auto">
+                    <a href="{{ poll.get_absolute_url }}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endfor %}
+
+{% endblock %}

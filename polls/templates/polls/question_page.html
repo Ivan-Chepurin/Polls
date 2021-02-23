@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ question.title }}{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="row" style="">
+
+        <div class="col md">
+            <div class="card-body">
+                <h5 class="card-title">{{ question.title }}</h5>
+                <p class="card-text">{{ question.text }}</p>
+                <p class="card-text">
+                    <small class="text-muted">
+                        {% if question.type == 'WA' %}
+                        Ответ придется написать
+                        {% elif question.type == 'OA' %}
+                        Можно выбрать только один вариант ответа
+                        {% elif question.type == 'MA' %}
+                        Можно выбрать несколько вариантов ответов
+                        {% endif %}
+                    </small>
+                </p>
+            </div>
+            <br>
+        </div>
+
+    </div>
+</div>
+
+
+<form action="{{ question.get_absolute_url }}" method="POST">
+    {% csrf_token %}
+
+    {% if question.type == 'WA' %}
+    <div class="form-floating">
+        <div class="form-floating">
+            {{ form.text }}
+            <label for="floatingInput {{ form.text.id_for_label }}">
+                придется написать ручками :D
+            </label>
+        </div>
+    </div>
+
+
+    {% elif question.type == 'OA' %}
+    {% for item in form.choice %}
+    <div class="card">
+        <div class="card-body">
+            <label for="{{ item.id_for_label }}">
+                <span class="radio">{{ item.tag }}</span>
+                {{ item.choice_label }}
+            </label>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% elif question.type == 'MA' %}
+    {% for item in form.choices %}
+    <div class="card">
+        <div class="card-body">
+            <label for="{{ item.id_for_label }}">
+                <span class="radio">{{ item.tag }}</span>
+                {{ item.choice_label }}
+            </label>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
+
+

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ poll.title }}{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="row" style="">
+
+        <div class="col" style="max-width:540px">
+            {% if poll.photo %}
+            <img src="{{ poll.photo.url }}" class="img-fluid" alt="" style="max-width:500px; max-height:auto">
+            {% else %}
+            <img src="https://picsum.photos/700/1000" class="img-fluid" alt="" style="max-width:500px; max-height:auto">
+            {% endif %}
+        </div>
+
+        <div class="col md">
+            <div class="card-body">
+                <h5 class="card-title">{{ poll.title }}</h5>
+                <p class="card-text">{{ poll.description }}</p>
+
+                <p class="card-text">
+                    <small class="text-muted">Количество вопросов: {{ number_questions }}</small>
+                </p>
+
+                <p class="card-text">
+                    <small class="text-muted">Дата окончания: {{ poll.end_date }} </small>
+                </p>
+                {% if postscript %}
+                <p class="card-text">
+                    <small class="text-muted">Вы уже прошли этот опрос</small>
+                </p>
+                {% endif %}
+
+            </div>
+            <div class="button">
+                <div class="button" style="height: auto">
+                    {% if start %}
+                    <a href="{{ start.get_absolute_url }}" class="btn btn-primary">Начать опрос</a>
+                    {% else %}
+                    <a href="{{ result }}" class="btn btn-primary">Смотреть результаты</a>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
