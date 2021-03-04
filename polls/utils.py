@@ -20,7 +20,8 @@ class AnonUserManager:
         try:
             anon_user_obj = self.db_model.objects.get(session=session_key)
             return anon_user_obj
-        except:
+        except Exception as e:
+            print(e)
             return self.create_anon_user(request)
 
     def create_anon_user(self, request):
@@ -74,6 +75,12 @@ class QuestionProperties:
     def set_question_set(self, poll_obj):
         self.question_set = Question.objects.filter(poll=poll_obj).select_related()
 
+    def get_question_set_count(self):
+        if self.question_set:
+            return len(self.question_set)
+        else:
+            return None
+
 
 class ChoiceSetProperties:
     choice_set = None
@@ -87,22 +94,24 @@ class ChoiceSetProperties:
         return self.choice_set
 
 
-class ModelProperties(PollProperties, QuestionProperties,
-                      ChoiceSetProperties, AnonUserManager):
+class ModelProperties(PollProperties,
+                      QuestionProperties,
+                      ChoiceSetProperties,
+                      AnonUserManager):
     question_choice_answer_set = None
 
     def set_question_choice_answer_set(self, poll, user):
         queryset = Answer.objects.filter(poll=poll, user=user)
-        prefetch = Prefetch('answer_set', queryset=queryset)
+        prefetch = Prefetch('answers', queryset=queryset)
         self.question_choice_answer_set = Question.objects.filter(
-            poll=poll).prefetch_related('choice_set', prefetch)
+            poll=poll).prefetch_related('choices', prefetch)
 
-    def get_next_question_or_none(self, poll, user):
+    def get_next_question_or_none(self, poll=None, user=None):
         if not self.question_choice_answer_set:
             self.set_question_choice_answer_set(poll, user)
 
         for q in self.question_choice_answer_set:
-            if not q.answer_set.all():
+            if not q.answers.all():
                 return q
         return None
 
@@ -117,12 +126,20 @@ class ModelProperties(PollProperties, QuestionProperties,
     def get_result_dict(self):
         results = {}
         for question in self.question_choice_answer_set:
-            choices = [choice for choice in question.choice_set.all()]
-            answers = [answer for answer in question.answer_set.all()]
+            choices = [choice for choice in question.choices.all()]
+            answers = [answer for answer in question.answers.all()]
             results[question.title] = {'question': question,
                                        'choices': choices,
                                        'answers': answers}
         return results
+
+    def get_question_set_count(self):
+        if self.question_choice_answer_set:
+            return len(self.question_choice_answer_set)
+        else:
+            return super().get_question_set_count()
+
+
 
 
 class QuestionViewMixin(FormView, ModelProperties):
