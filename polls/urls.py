@@ -3,20 +3,19 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .views import *
-from .apiviews import PollViewSet, QuestionViewSet
+from .apiviews import PollViewSet, QuestionViewSet, AnswerCreate
 
-router = DefaultRouter()
-router.register(r'polls', PollViewSet)
-router.register(r'questions', QuestionViewSet)
+# router = DefaultRouter()
+# router.register(r'polls', PollViewSet)
+# router.register(r'questions', QuestionViewSet)
 
-# api_urlpatterns = [
-#     path('', api_root),
-#     path('polls/', PollsViewSet.as_view({'get': 'list'}), name='polls-list'),
-#     path('polls/<int:pk>', PollsViewSet.as_view({'get': 'retrieve'}), name='poll-detail'),
-#     path('question/<int:pk>', QuestionViewSet.as_view({'get': 'retrieve', 'post': 'create'}), name='question-detail'),
-#     # path('test/<int:pk>', QuestionGenericAPIView.as_view(), name='test')
-#     # path('question/<int:pk>/answer/', AnswerCreateAPIView.as_view(), name='answer-create')
-# ]
+api_urlpatterns = [
+    path('polls/', PollViewSet.as_view({'get': 'list'}), name='poll-list'),
+    path('polls/<int:pk>', PollViewSet.as_view({'get': 'retrieve'}), name='poll-detail'),
+    path('questions/', QuestionViewSet.as_view({'get': 'list'}), name='question-list'),
+    path('questions/<int:pk>/', QuestionViewSet.as_view({'get': 'retrieve'}), name='question-detail'),
+    path('questions/<int:pk>/answer/', AnswerCreate.as_view({'post': 'create'}), name='answer-create')
+]
 
 site_urlpatterns = [
     path('', PollsHome.as_view(), name='polls_home'),
@@ -28,5 +27,6 @@ site_urlpatterns = [
 
 urlpatterns = [
     path('', include(site_urlpatterns)),
-    path('api/', include(router.urls)),
+    path('api/', include(api_urlpatterns)),
+    # path('api/', include(router.urls)),
 ]
